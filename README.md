@@ -6,6 +6,8 @@ A Fireflies.ai clone. Upload or record audio and video — get a transcript, sum
 
 ## Features
 
+This app is fully functional. Upload Meeting recordings or use the record feature to record your voice and get transcripts and summaries, just like Fireflies.AI. You can 
+
 ### Upload a Meeting recording
 Pick any audio or video file (MP3, WAV, M4A, AAC, FLAC, OGG, MP4, MOV, AVI, MKV, WebM). The app compresses it in your browser, uploads it, then automatically transcribes and summarizes it. You get a full transcript, a 2–3 sentence summary, key points, action items with owners, and decisions — all without doing anything else.
 
@@ -58,10 +60,10 @@ This project was built in ~5 hours between 2PM IST to 9PM IST on 16th May, Satur
 1. Pick a file and give it a name in the dialog
 2. ffmpeg.wasm compresses the file to a 32kbps mono 16kHz mp3
 3. The compressed mp3 uploads to Supabase Storage under `recordings/`
-4. The dialog closes immediately and a row appears in the list with a spinner
+4. The dialog closes immediately and a row appears optimistically
 5. A background API call creates the meeting row in the database with `status: pending`
 6. Downloads the mp3 from Storage, sends it to OpenAI Whisper via OpenRouter → gets back the transcript
-7. Uploads the compressed audio to Supabase Storage for playback
+7. Sets `audio_path` to the same `recordings/` path — used for playback
 8. Sends the transcript to Gemini via OpenRouter → gets back structured JSON (summary, key points, action items, decisions)
 9. The UI polls every 3 seconds and updates the row — the spinner disappears when done
 

@@ -51,23 +51,14 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     log(id, 'TRANSCRIBE starting');
     await supabase.from('meetings').update({ status: 'transcribing', summary: null }).eq('id', id);
     const t0 = Date.now();
-    const { text: transcript, audioBuffer } = await transcribeAudio(fileBuffer, fileName);
+    const { text: transcript } = await transcribeAudio(fileBuffer, fileName);
     log(id, 'TRANSCRIBE done', `${transcript.length} chars in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
-
-    // Upload compressed audio
-    const audioStoragePath = `audio/${id}.mp3`;
-    log(id, 'UPLOAD audio to storage', audioStoragePath);
-    const { error: uploadError } = await supabase.storage
-      .from('meetings')
-      .upload(audioStoragePath, audioBuffer, { contentType: 'audio/mpeg', upsert: true });
-    if (uploadError) log(id, 'UPLOAD audio failed', uploadError.message);
-    else log(id, 'UPLOAD audio done');
 
     log(id, 'SUMMARIZE starting');
     await supabase.from('meetings').update({
       status: 'summarizing',
       transcript,
-      audio_path: uploadError ? meeting.audio_path : audioStoragePath,
+      audio_path: downloadPath,
     }).eq('id', id);
     const t1 = Date.now();
     const summary = await summarizeTranscript(transcript);

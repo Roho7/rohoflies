@@ -42,7 +42,7 @@ function extractAudio(inputBuffer: Buffer, inputExt: string): Promise<Buffer> {
   });
 }
 
-export async function transcribeAudio(fileBuffer: Buffer, filename: string): Promise<{ text: string; audioBuffer: Buffer }> {
+export async function transcribeAudio(fileBuffer: Buffer, filename: string): Promise<{ text: string }> {
   const ext = filename.split('.').pop()?.toLowerCase() ?? '';
 
   let audioBuffer = fileBuffer;
@@ -90,7 +90,7 @@ export async function transcribeAudio(fileBuffer: Buffer, filename: string): Pro
     if (!text) throw new Error(`Whisper response has no text: ${JSON.stringify(data)}`);
 
     console.log('[whisper] transcription done, chars:', text.length);
-    return { text, audioBuffer };
+    return { text };
   } catch (error) {
     console.error('[whisper] error', error);
     throw error;
