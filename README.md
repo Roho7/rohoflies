@@ -49,6 +49,7 @@ This project was built in ~5 hours between 2PM IST to 9PM IST on 16th May, Satur
 - Next I changed the plan slightly to build out a Live Recording features similar to Fireflies.ai. This was straightforward. I used the browser's inbuilt media recorder API to capture audio and send the audio blob to supabase and then the same /transcribe API. 
 - Lastly I cleaned up and prettified the UI to look more similar to Fireflies.ai and put all the common recording states and logic in a Context. 
 - The one thing I would change in this build is the polling logic that gets the latest state of the in-progress recording. I would use a realtime feature from the database to take care of it. But currently, it works fine as is, its just poor design.
+- I also implemented search as my last commit. User can now search through their transcripts using related phrases.
 
 
 

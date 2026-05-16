@@ -21,8 +21,8 @@ function extractAudio(inputBuffer: Buffer, inputExt: string): Promise<Buffer> {
 
     ffmpeg(inputPath)
       .audioCodec('libmp3lame')
-      .audioBitrate('32k')   // 32kbps is plenty for speech transcription
-      .audioChannels(1)       // mono — halves the size again
+      .audioBitrate('32k')   // 32kbps 
+      .audioChannels(1)       // mono — smaller size
       .audioFrequency(16000)  // 16kHz — Whisper's native sample rate
       .noVideo()
       .format('mp3')

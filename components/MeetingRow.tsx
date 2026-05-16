@@ -71,10 +71,12 @@ export default function MeetingRow({ meeting, onDelete }: MeetingRowProps) {
     setRetrying(false);
   }
 
+  const isOptimistic = meeting.id.startsWith('optimistic-');
+
   return (
     <div
-      className="group flex items-center gap-4 bg-white border border-gray-100 rounded-lg px-3 py-2 hover:border-gray-200 hover:shadow-sm transition-all cursor-pointer"
-      onClick={() => router.push(`/meetings/${meeting.id}`)}
+      className={`group flex items-center gap-4 bg-white border border-gray-100 rounded-lg px-3 py-2 transition-all ${isOptimistic ? 'cursor-default opacity-70' : 'hover:border-gray-200 hover:shadow-sm cursor-pointer'}`}
+      onClick={() => { if (!isOptimistic) router.push(`/meetings/${meeting.id}`); }}
     >
       <Avatar title={meeting.title} />
 
@@ -98,7 +100,7 @@ export default function MeetingRow({ meeting, onDelete }: MeetingRowProps) {
       </div>
 
       {/* Row menu */}
-      <DropdownMenu>
+      {isOptimistic ? <div className="w-8 shrink-0" /> : <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
@@ -121,7 +123,7 @@ export default function MeetingRow({ meeting, onDelete }: MeetingRowProps) {
             <Trash2 size={13} /> {deleting ? 'Deleting…' : 'Delete'}
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>}
     </div>
   );
 }
