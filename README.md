@@ -27,7 +27,7 @@ Every meeting row has a three-dot menu. You can delete a meeting (removes it fro
 
 ## Build Process
 
-This project was built in ~5 hours between 2PM IST to 9PM IST on 16th May, Saturday, 2026. This project was built with the help of Claude Code which I used to architect, design and develop most parts of the project. The process I followed is as follows: 
+This project was built in ~5 hours between 2PM IST to 10PM IST on 16th May, Saturday, 2026. This project was built with the help of Claude Code which I used to architect, design and develop most parts of the project. The process I followed is as follows: 
 - I used the official Fireflies.ai app thoroughly to get familiar with the core flows. 
 - I wrote a rough spec document in Claude desktop and brainstormed implementation details for the Upload Recording flow. 
 - I knew I could make the entire project functional, with real transcription and summarization features.
