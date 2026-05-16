@@ -1,17 +1,12 @@
+'use client';
+
 import Link from 'next/link';
-import { createClient } from '@/utils/supabase/server';
 import MeetingRow from '@/components/MeetingRow';
-import { Meeting } from '@/types';
+import { useMeetings } from '@/context/MeetingsContext';
 
-export const dynamic = 'force-dynamic';
-
-export default async function HomePage() {
-  const supabase = await createClient();
-  const { data: meetings } = await supabase
-    .from('meetings')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(6);
+export default function HomePage() {
+  const { meetings, deleteMeeting } = useMeetings();
+  const recent = meetings.slice(0, 6);
 
   return (
     <div className="flex flex-col">
@@ -44,17 +39,17 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        {(!meetings || meetings.length === 0) && (
+        {recent.length === 0 && (
           <div className="text-center py-16 text-gray-400">
             <p className="text-base font-medium">No meetings yet.</p>
             <p className="text-sm mt-1">Upload a file or start a recording to get started.</p>
           </div>
         )}
 
-        {meetings && meetings.length > 0 && (
+        {recent.length > 0 && (
           <div className="flex flex-col gap-3 w-full">
-            {(meetings as Meeting[]).map((meeting) => (
-              <MeetingRow key={meeting.id} meeting={meeting} />
+            {recent.map((meeting) => (
+              <MeetingRow key={meeting.id} meeting={meeting} onDelete={() => deleteMeeting(meeting.id)} />
             ))}
           </div>
         )}

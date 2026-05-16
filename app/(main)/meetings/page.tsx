@@ -1,8 +1,8 @@
-import { createClient } from '@/utils/supabase/server';
-import MeetingRow from '@/components/MeetingRow';
-import { Meeting } from '@/types';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import MeetingRow from '@/components/MeetingRow';
+import { useMeetings } from '@/context/MeetingsContext';
+import { Meeting } from '@/types';
 
 function groupByDate(meetings: Meeting[]): { label: string; items: Meeting[] }[] {
   const groups: Record<string, Meeting[]> = {};
@@ -16,22 +16,15 @@ function groupByDate(meetings: Meeting[]): { label: string; items: Meeting[] }[]
   return Object.entries(groups).map(([label, items]) => ({ label, items }));
 }
 
-export default async function MeetingsPage() {
-  const supabase = await createClient();
-  const { data: meetings, error } = await supabase
-    .from('meetings')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  const groups = groupByDate((meetings as Meeting[]) ?? []);
+export default function MeetingsPage() {
+  const { meetings, deleteMeeting } = useMeetings();
+  const groups = groupByDate(meetings);
 
   return (
     <div className="px-6 py-6 w-full">
       <h1 className="text-xl font-semibold text-gray-900 mb-6">All Meetings</h1>
 
-      {error && <p className="text-red-500 text-sm">Failed to load meetings: {error.message}</p>}
-
-      {!error && groups.length === 0 && (
+      {groups.length === 0 && (
         <div className="text-center py-24 text-gray-400">
           <p className="text-base font-medium">No meetings yet.</p>
           <p className="text-sm mt-1">Upload a file or start a recording to get started.</p>
@@ -43,7 +36,7 @@ export default async function MeetingsPage() {
           <p className="text-sm text-gray-400 font-medium mb-3 px-1">{label}</p>
           <div className="flex flex-col gap-3">
             {items.map((meeting) => (
-              <MeetingRow key={meeting.id} meeting={meeting} />
+              <MeetingRow key={meeting.id} meeting={meeting} onDelete={() => deleteMeeting(meeting.id)} />
             ))}
           </div>
         </div>

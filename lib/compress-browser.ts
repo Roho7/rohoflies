@@ -46,6 +46,6 @@ export async function compressToMp3(
   await ff.deleteFile(inputName);
   await ff.deleteFile(outputName);
 
-  const blob = new Blob([data], { type: 'audio/mpeg' });
+  const blob = new Blob([data as any], { type: 'audio/mpeg' });
   return new File([blob], `${file.name.replace(/\.[^/.]+$/, '')}.mp3`, { type: 'audio/mpeg' });
 }

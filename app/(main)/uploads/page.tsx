@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Upload, FileAudio } from 'lucide-react';
 import MeetingRow from '@/components/MeetingRow';
 import { Meeting } from '@/types';
@@ -16,12 +16,16 @@ import {
 } from '@/components/ui/dialog';
 import { createClient } from '@/utils/supabase/client';
 import { compressToMp3 } from '@/lib/compress-browser';
+import { useMeetings } from '@/context/MeetingsContext';
 
 const ACCEPTED = '.mp3,.wav,.mp4,.m4a,.mov,.avi,.mkv,.webm,.flac,.ogg,.aac';
 const NEEDS_COMPRESSION_RE = /\.(mp4|mov|avi|mkv|webm|flac|ogg|wav)$/i;
-const SIZE_THRESHOLD = 5 * 1024 * 1024; // compress anything over 5MB
+const SIZE_THRESHOLD = 5 * 1024 * 1024;
 
 export default function UploadsPage() {
+  const { meetings, addMeeting, updateMeeting, deleteMeeting } = useMeetings();
+  const uploads = meetings.filter((m) => m.entity_type === 'upload');
+
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -30,14 +34,6 @@ export default function UploadsPage() {
   const [status, setStatus] = useState('');
   const [compressionPct, setCompressionPct] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [uploads, setUploads] = useState<Meeting[]>([]);
-
-  useEffect(() => {
-    fetch('/api/meetings')
-      .then((r) => r.json())
-      .then((all: Meeting[]) => setUploads(all.filter((m) => m.entity_type === 'upload')))
-      .catch(() => {});
-  }, []);
 
   function handleFile(file: File) {
     const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
@@ -101,13 +97,12 @@ export default function UploadsPage() {
         updated_at: new Date().toISOString(),
       };
 
-      setUploads((u) => [optimisticMeeting, ...u]);
+      addMeeting(optimisticMeeting);
       setPendingFile(null);
       setTitle('');
       setLoading(false);
       setStatus('');
 
-      // Fire and forget — process in background
       fetch('/api/meetings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -122,20 +117,13 @@ export default function UploadsPage() {
       }).then(async (res) => {
         const data = await res.json();
         if (!res.ok) {
-          setUploads((u) => u.map((m) => m.id === tempId ? { ...m, status: 'failed' } : m));
+          updateMeeting(tempId, { status: 'failed' });
           return;
         }
-        setUploads((u) => u.map((m) => m.id === tempId ? { ...data } : m));
-        const realId = data.id;
-        const poll = setInterval(async () => {
-          const r = await fetch(`/api/meetings/${realId}`);
-          if (!r.ok) { clearInterval(poll); return; }
-          const updated: Meeting = await r.json();
-          setUploads((u) => u.map((m) => m.id === realId ? updated : m));
-          if (updated.status === 'done' || updated.status === 'failed') clearInterval(poll);
-        }, 3000);
+        // Replace optimistic row with real meeting — context polling takes it from here
+        updateMeeting(tempId, { ...data });
       }).catch(() => {
-        setUploads((u) => u.map((m) => m.id === tempId ? { ...m, status: 'failed' } : m));
+        updateMeeting(tempId, { status: 'failed' });
       });
 
     } catch (e: unknown) {
@@ -194,7 +182,7 @@ export default function UploadsPage() {
       ) : (
         <div className="flex flex-col gap-3 w-full">
           {uploads.map((meeting) => (
-            <MeetingRow key={meeting.id} meeting={meeting} onDelete={() => setUploads((u) => u.filter((m) => m.id !== meeting.id))} />
+            <MeetingRow key={meeting.id} meeting={meeting} onDelete={() => deleteMeeting(meeting.id)} />
           ))}
         </div>
       )}
