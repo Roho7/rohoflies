@@ -135,7 +135,7 @@ export default function UploadsPage() {
   }
 
   return (
-    <div className="max-w-full md:p-12 mx-auto space-y-6">
+    <div className="max-w-full p-4 md:p-12 mx-auto space-y-6">
 
       {/* Drop zone */}
       <div

@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { Search, Video, ChevronDown, Upload, Mic } from 'lucide-react';
+import { Search, Video, ChevronDown, Upload, Mic, Menu } from 'lucide-react';
 import { useMeetings } from '@/context/MeetingsContext';
 import { Meeting } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -43,7 +43,11 @@ function searchMeetings(meetings: Meeting[], query: string): Meeting[] {
   ).slice(0, 6);
 }
 
-export default function Topbar() {
+interface TopbarProps {
+  onMenuClick?: () => void;
+}
+
+export default function Topbar({ onMenuClick }: TopbarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { meetings } = useMeetings();
@@ -73,9 +77,17 @@ export default function Topbar() {
 
   return (
     <>
-      <header className="bg-white border-b border-gray-100 px-6 py-3 flex items-center gap-4 shrink-0">
+      <header className="bg-white border-b border-gray-100 px-4 md:px-6 py-3 flex items-center gap-3 md:gap-4 shrink-0">
+        {/* Hamburger — mobile only */}
+        <button
+          className="md:hidden p-1.5 rounded-md hover:bg-gray-100 text-gray-500 shrink-0"
+          onClick={onMenuClick}
+        >
+          <Menu size={18} />
+        </button>
+
         {/* Breadcrumb */}
-        <div className="w-40 shrink-0">
+        <div className="hidden md:block w-40 shrink-0">
           <span className="text-sm font-semibold text-gray-800">{pageName}</span>
         </div>
 
@@ -140,7 +152,7 @@ export default function Topbar() {
               <DropdownMenuTrigger asChild>
                 <Button
                   size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 text-white rounded-l-none border-l border-purple-500 h-8 px-2"
+                  className="bg-purple-600 hover:bg-purple-700 text-white rounded-l-none border-l border-purple-500 h-[30px] px-2"
                 >
                   <ChevronDown size={14} />
                 </Button>
@@ -173,10 +185,10 @@ export default function Topbar() {
             </DropdownMenu>
           </div>
 
-          {/* Mic icon button */}
+          {/* Mic icon button — desktop only */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => router.push('/record')}>
+              <Button variant="outline" size="sm" className="hidden md:flex h-8 w-8 p-0" onClick={() => router.push('/record')}>
                 <Mic size={14} />
               </Button>
             </TooltipTrigger>

@@ -52,6 +52,7 @@ This project was built in ~5 hours between 2PM IST to 10PM IST on 16th May, Satu
 - Lastly I cleaned up and prettified the UI to look more similar to Fireflies.ai and put all the common recording states and logic in a Context. 
 - The one thing I would change in this build is the polling logic that gets the latest state of the in-progress recording. I would use a realtime feature from the database to take care of it. But currently, it works fine as is, its just poor design.
 - I also implemented search as my last commit. User can now search through their transcripts using related phrases.
+- The application is also responsive, fully compatible on mobile devices. 
 
 
 
