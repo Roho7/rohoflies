@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { House, Video, Upload, X } from 'lucide-react';
+import { House, Video, Upload, Calendar, X } from 'lucide-react';
 
 const navItems = [
   { label: 'Home', href: '/', icon: House },
+  { label: 'Upcoming', href: '/upcoming', icon: Calendar },
   { label: 'Meetings', href: '/meetings', icon: Video },
   { label: 'Uploads', href: '/uploads', icon: Upload },
 ];
